@@ -17,14 +17,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
       onClick={onClose}
     >
       <div 
-        className="bg-bunker-100 dark:bg-bunker-900 rounded-lg shadow-2xl p-6 w-full max-w-lg mx-4 relative transform transition-all duration-300 ease-out scale-95"
+        className="bg-neutral-100 dark:bg-neutral-900 rounded-lg shadow-2xl p-6 w-full max-w-lg mx-4 relative transform transition-all duration-300 ease-out scale-95"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center border-b border-bunker-300 dark:border-bunker-700 pb-3 mb-4">
-          <h2 className="text-xl font-semibold text-bunker-800 dark:text-bunker-200">{title}</h2>
+        <div className="flex justify-between items-center border-b border-neutral-300 dark:border-neutral-700 pb-3 mb-4">
+          <h2 className="text-xl font-semibold text-neutral-800 dark:text-neutral-200">{title}</h2>
           <button 
             onClick={onClose} 
-            className="text-bunker-500 hover:text-bunker-800 dark:hover:text-bunker-200 transition-colors"
+            className="text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
             aria-label="Close modal"
           >
             <i className="fas fa-times text-2xl"></i>

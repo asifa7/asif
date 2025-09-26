@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { Session, WeightUnit } from '../types';
@@ -17,17 +16,20 @@ const History: React.FC<HistoryProps> = ({ unit }) => {
     setExpandedSessionId(expandedSessionId === sessionId ? null : sessionId);
   };
   
+  const completedSessions = sessions.filter(s => s.status === 'completed' && s.completedAt);
+  
   const exportToCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Session ID,Date,Workout,Exercise,Set,Reps,Weight,Volume,Unit\n";
+    csvContent += "Session ID,Date,Completed At,Workout,Exercise,Set,Reps,Weight,Volume,Unit\n";
 
-    sessions.forEach(session => {
+    completedSessions.forEach(session => {
         const template = WORKOUT_TEMPLATES.find(t => t.id === session.templateId);
         session.exercises.forEach(exercise => {
             exercise.sets.forEach((set, index) => {
                 const row = [
                     session.id,
                     session.date,
+                    session.completedAt,
                     template?.title || 'Custom Workout',
                     exercise.name,
                     index + 1,
@@ -50,7 +52,7 @@ const History: React.FC<HistoryProps> = ({ unit }) => {
     document.body.removeChild(link);
   };
   
-  const sortedSessions = [...sessions].sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+  const sortedSessions = [...completedSessions].sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
 
   return (
     <div>
@@ -58,8 +60,8 @@ const History: React.FC<HistoryProps> = ({ unit }) => {
             <h2 className="text-3xl font-bold">Workout History</h2>
             <button
                 onClick={exportToCSV}
-                className="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition-colors flex items-center gap-2"
-                disabled={sessions.length === 0}
+                className="bg-neutral-800 text-neutral-100 hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300 font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+                disabled={sortedSessions.length === 0}
             >
                 <Icon name="download" /> Export to CSV
             </button>
@@ -70,25 +72,25 @@ const History: React.FC<HistoryProps> = ({ unit }) => {
           {sortedSessions.map(session => {
             const template = WORKOUT_TEMPLATES.find(t => t.id === session.templateId);
             return (
-              <div key={session.id} className="bg-bunker-100 dark:bg-bunker-900 rounded-lg shadow-md">
+              <div key={session.id} className="bg-neutral-100 dark:bg-neutral-900 rounded-lg shadow-md">
                 <div 
                     className="p-4 cursor-pointer flex justify-between items-center"
                     onClick={() => toggleSessionDetails(session.id)}
                 >
                     <div>
                         <p className="font-bold text-lg">{template?.title || 'Custom Workout'}</p>
-                        <p className="text-sm text-bunker-600 dark:text-bunker-400">
-                            {new Date(session.completedAt).toLocaleDateString()} - Total Volume: {session.totalVolume.toLocaleString()} {session.unit}
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            {new Date(session.completedAt!).toLocaleDateString()} - Total Volume: {session.totalVolume.toLocaleString()} {session.unit}
                         </p>
                     </div>
                     <Icon name={expandedSessionId === session.id ? "chevronUp" : "chevronDown"} className="text-xl"/>
                 </div>
                 {expandedSessionId === session.id && (
-                    <div className="border-t border-bunker-200 dark:border-bunker-800 p-4">
+                    <div className="border-t border-neutral-200 dark:border-neutral-800 p-4">
                         {session.exercises.map(ex => (
                             <div key={ex.id} className="mb-3">
                                 <p className="font-semibold">{ex.name}</p>
-                                <ul className="list-disc list-inside text-sm text-bunker-700 dark:text-bunker-300 pl-2">
+                                <ul className="list-disc list-inside text-sm text-neutral-700 dark:text-neutral-300 pl-2">
                                     {ex.sets.map((set, index) => (
                                         <li key={set.id}>
                                             Set {index + 1}: {set.reps} reps @ {set.weight} {session.unit} (Volume: {set.volume})
@@ -104,10 +106,10 @@ const History: React.FC<HistoryProps> = ({ unit }) => {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 px-6 bg-bunker-100 dark:bg-bunker-900 rounded-lg">
-          <Icon name="history" className="text-5xl text-bunker-400 mb-4" />
+        <div className="text-center py-16 px-6 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
+          <Icon name="history" className="text-5xl text-neutral-400 mb-4" />
           <h3 className="text-xl font-semibold">No Workouts Yet</h3>
-          <p className="text-bunker-500 mt-2">Complete your first workout session to see it here.</p>
+          <p className="text-neutral-500 mt-2">Complete your first workout session to see it here.</p>
         </div>
       )}
     </div>

@@ -26,7 +26,6 @@ export interface SetEntry {
   reps: number;
   weight: number;
   volume: number;
-  isCompleted: boolean;
 }
 
 export interface SessionExercise extends Exercise {
@@ -34,13 +33,14 @@ export interface SessionExercise extends Exercise {
 }
 
 export interface Session {
-  id: string;
+  id:string;
   date: string; // YYYY-MM-DD
   templateId: string;
-  completedAt: string; // ISO string
+  completedAt?: string; // ISO string, optional now
   exercises: SessionExercise[];
   totalVolume: number;
   unit: WeightUnit;
+  status: 'in-progress' | 'completed';
 }
 
 export interface DailyChecklist {

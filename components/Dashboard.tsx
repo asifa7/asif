@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useCallback } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { Session, WeightUnit, WorkoutTemplate } from '../types';
@@ -139,10 +140,10 @@ const Dashboard: React.FC<DashboardProps> = ({ unit }) => {
 
     if (sessions.length === 0) {
         return (
-             <div className="text-center py-16 px-6 bg-bunker-100 dark:bg-bunker-900 rounded-lg">
-                <Icon name="dashboard" className="text-5xl text-bunker-400 mb-4" />
+             <div className="text-center py-16 px-6 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
+                <Icon name="dashboard" className="text-5xl text-neutral-400 mb-4" />
                 <h3 className="text-xl font-semibold">Dashboard is Empty</h3>
-                <p className="text-bunker-500 mt-2">Start working out to see your stats and insights here.</p>
+                <p className="text-neutral-500 mt-2">Start working out to see your stats and insights here.</p>
             </div>
         )
     }
@@ -152,11 +153,11 @@ const Dashboard: React.FC<DashboardProps> = ({ unit }) => {
     return (
         <div>
             <div className="mb-6 flex flex-wrap gap-2">
-                <button onClick={() => setFilter('overall')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${filter === 'overall' ? 'bg-blue-600 text-white' : 'bg-bunker-200 dark:bg-bunker-800 hover:bg-bunker-300 dark:hover:bg-bunker-700'}`}>
+                <button onClick={() => setFilter('overall')} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${filter === 'overall' ? 'bg-neutral-900 text-neutral-50 dark:bg-neutral-100 dark:text-neutral-900' : 'bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700'}`}>
                     Overall Report
                 </button>
                 {WORKOUT_TEMPLATES.map(template => (
-                    <button key={template.id} onClick={() => { setFilter(template.id); setAiInsight(''); }} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${filter === template.id ? 'bg-blue-600 text-white' : 'bg-bunker-200 dark:bg-bunker-800 hover:bg-bunker-300 dark:hover:bg-bunker-700'}`}>
+                    <button key={template.id} onClick={() => { setFilter(template.id); setAiInsight(''); }} className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${filter === template.id ? 'bg-neutral-900 text-neutral-50 dark:bg-neutral-100 dark:text-neutral-900' : 'bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700'}`}>
                         {template.title}
                     </button>
                 ))}
@@ -164,18 +165,18 @@ const Dashboard: React.FC<DashboardProps> = ({ unit }) => {
 
             {filter === 'overall' ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-                    <div className="lg:col-span-3 bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg">
-                         <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="lightbulb" className="mr-3 text-yellow-400"/> Overall Insight</h3>
-                         <p className="text-bunker-600 dark:text-bunker-300">{overallAnalysis.insight}</p>
+                    <div className="lg:col-span-3 bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg">
+                         <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="lightbulb" className="mr-3 text-neutral-500"/> Overall Insight</h3>
+                         <p className="text-neutral-600 dark:text-neutral-300">{overallAnalysis.insight}</p>
                     </div>
-                    <div className="lg:col-span-2 bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg">
-                        <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="chartBar" className="mr-3 text-blue-500"/> Weekly Volume (Last 4 Weeks)</h3>
+                    <div className="lg:col-span-2 bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg">
+                        <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="chartBar" className="mr-3 text-neutral-500"/> Weekly Volume (Last 4 Weeks)</h3>
                         {overallAnalysis.weeklyChartData.length > 0 ? (
-                            <BarChart data={overallAnalysis.weeklyChartData} barColor="bg-blue-500" />
-                        ) : <p className="text-bunker-500">Not enough data for weekly volume chart.</p>}
+                            <BarChart data={overallAnalysis.weeklyChartData} barColor="bg-neutral-500" />
+                        ) : <p className="text-neutral-500">Not enough data for weekly volume chart.</p>}
                     </div>
-                    <div className="lg:col-span-1 bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg">
-                        <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="balance" className="mr-3 text-teal-500"/> Muscle Group Balance</h3>
+                    <div className="lg:col-span-1 bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg">
+                        <h3 className="text-xl font-semibold mb-4 flex items-center"><Icon name="balance" className="mr-3 text-neutral-500"/> Muscle Group Balance</h3>
                         {overallAnalysis.muscleBalanceData.length > 0 ? (
                             <div className="space-y-4">
                                 {overallAnalysis.muscleBalanceData.map(item => (
@@ -184,53 +185,53 @@ const Dashboard: React.FC<DashboardProps> = ({ unit }) => {
                                             <span className="font-semibold">{item.label}</span>
                                             <span>{item.value}%</span>
                                         </div>
-                                        <div className="w-full bg-bunker-200 dark:bg-bunker-800 rounded-full h-4">
-                                            <div className="bg-teal-500 h-4 rounded-full" style={{ width: `${item.value}%` }}></div>
+                                        <div className="w-full bg-neutral-200 dark:bg-neutral-800 rounded-full h-4">
+                                            <div className="bg-neutral-600 h-4 rounded-full" style={{ width: `${item.value}%` }}></div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                         ) : <p className="text-bunker-500">Not enough data for balance analysis.</p>}
+                         ) : <p className="text-neutral-500">Not enough data for balance analysis.</p>}
                     </div>
                 </div>
             ) : (
                 detailedAnalysis && detailedAnalysis.totalSessions > 0 ? (
                     <div className="space-y-6 animate-fade-in">
-                        <div className="bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg">
+                        <div className="bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg">
                             <h3 className="text-xl font-semibold mb-4">AI-Powered Suggestion for {activeTemplate?.title}</h3>
                             {isLoadingAiInsight ? (
-                                <div className="flex items-center text-bunker-500">
+                                <div className="flex items-center text-neutral-500">
                                     <Icon name="spinner" className="mr-3"/> Analyzing your progress...
                                 </div>
                             ) : aiInsight ? (
-                                <p className="text-bunker-700 dark:text-bunker-300 whitespace-pre-wrap">{aiInsight}</p>
+                                <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">{aiInsight}</p>
                             ) : (
-                                <button onClick={handleGetInsight} className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                                <button onClick={handleGetInsight} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300 font-semibold py-2 px-4 rounded-lg transition-colors">
                                     Get Improvement Tip
                                 </button>
                             )}
                         </div>
                         <div className="grid grid-cols-2 gap-6">
-                             <div className="bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg text-center">
-                                <h4 className="text-lg font-semibold text-bunker-600 dark:text-bunker-400">Total Sessions</h4>
-                                <p className="text-4xl font-bold text-blue-500">{detailedAnalysis.totalSessions}</p>
+                             <div className="bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg text-center">
+                                <h4 className="text-lg font-semibold text-neutral-600 dark:text-neutral-400">Total Sessions</h4>
+                                <p className="text-4xl font-bold text-neutral-800 dark:text-neutral-200">{detailedAnalysis.totalSessions}</p>
                             </div>
-                             <div className="bg-bunker-100 dark:bg-bunker-900 p-6 rounded-lg text-center">
-                                <h4 className="text-lg font-semibold text-bunker-600 dark:text-bunker-400">Avg. Volume / Session</h4>
-                                <p className="text-4xl font-bold text-blue-500">{Math.round(detailedAnalysis.avgVolume).toLocaleString()} <span className="text-2xl">{unit}</span></p>
+                             <div className="bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg text-center">
+                                <h4 className="text-lg font-semibold text-neutral-600 dark:text-neutral-400">Avg. Volume / Session</h4>
+                                <p className="text-4xl font-bold text-neutral-800 dark:text-neutral-200">{Math.round(detailedAnalysis.avgVolume).toLocaleString()} <span className="text-2xl">{unit}</span></p>
                             </div>
                         </div>
                         <div>
                             <h3 className="text-xl font-semibold mb-4">Exercise Performance</h3>
                             <div className="space-y-3">
                                 {detailedAnalysis.exerciseStats.map(ex => (
-                                    <div key={ex.name} className="bg-bunker-100 dark:bg-bunker-900 p-4 rounded-lg">
+                                    <div key={ex.name} className="bg-neutral-100 dark:bg-neutral-900 p-4 rounded-lg">
                                         <p className="font-bold text-lg">{ex.name}</p>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 text-center">
-                                            <div><p className="text-sm text-bunker-500">Total Sets</p><p className="font-semibold">{ex.totalSets}</p></div>
-                                            <div><p className="text-sm text-bunker-500">Avg Reps</p><p className="font-semibold">{(ex.totalReps / ex.totalSets).toFixed(1)}</p></div>
-                                            <div><p className="text-sm text-bunker-500">Avg Weight ({unit})</p><p className="font-semibold">{(ex.totalWeight / ex.count).toFixed(1)}</p></div>
-                                            <div><p className="text-sm text-bunker-500">Max Weight ({unit})</p><p className="font-semibold">{ex.maxWeight}</p></div>
+                                            <div><p className="text-sm text-neutral-500">Total Sets</p><p className="font-semibold">{ex.totalSets}</p></div>
+                                            <div><p className="text-sm text-neutral-500">Avg Reps</p><p className="font-semibold">{(ex.totalReps / ex.totalSets).toFixed(1)}</p></div>
+                                            <div><p className="text-sm text-neutral-500">Avg Weight ({unit})</p><p className="font-semibold">{(ex.totalWeight / ex.count).toFixed(1)}</p></div>
+                                            <div><p className="text-sm text-neutral-500">Max Weight ({unit})</p><p className="font-semibold">{ex.maxWeight}</p></div>
                                         </div>
                                     </div>
                                 ))}
@@ -238,10 +239,10 @@ const Dashboard: React.FC<DashboardProps> = ({ unit }) => {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-16 px-6 bg-bunker-100 dark:bg-bunker-900 rounded-lg">
-                        <Icon name="history" className="text-5xl text-bunker-400 mb-4" />
+                    <div className="text-center py-16 px-6 bg-neutral-100 dark:bg-neutral-900 rounded-lg">
+                        <Icon name="history" className="text-5xl text-neutral-400 mb-4" />
                         <h3 className="text-xl font-semibold">No Data for this Workout</h3>
-                        <p className="text-bunker-500 mt-2">Complete a "{activeTemplate?.title}" session to see detailed stats here.</p>
+                        <p className="text-neutral-500 mt-2">Complete a "{activeTemplate?.title}" session to see detailed stats here.</p>
                     </div>
                 )
             )}

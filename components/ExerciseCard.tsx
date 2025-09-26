@@ -31,15 +31,14 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, unit, onUpdateSet
   }, [exercise.sets]);
 
   return (
-    <div className="bg-bunker-100 dark:bg-bunker-900 rounded-xl shadow-md overflow-hidden">
-      <div className="p-4 bg-bunker-200 dark:bg-bunker-800 flex justify-between items-center">
+    <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl shadow-md overflow-hidden">
+      <div className="p-4 bg-neutral-200 dark:bg-neutral-800 flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-bunker-800 dark:text-bunker-100">{exercise.name}</h3>
-          <p className="text-sm text-bunker-600 dark:text-bunker-400">Total Volume: {exerciseVolume.toLocaleString()} {unit}</p>
+          <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">{exercise.name}</h3>
         </div>
         <button
           onClick={handleGetTip}
-          className="bg-teal-500 text-white rounded-full h-10 w-10 flex items-center justify-center hover:bg-teal-600 transition-colors"
+          className="bg-neutral-700 text-white rounded-full h-10 w-10 flex items-center justify-center hover:bg-neutral-600 transition-colors"
           title="Get AI Tip"
         >
           <Icon name="info" />
@@ -47,11 +46,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, unit, onUpdateSet
       </div>
 
       <div className="p-4">
-        <div className="grid grid-cols-5 gap-2 text-sm font-semibold text-bunker-600 dark:text-bunker-400 mb-2 px-2">
+        <div className="grid grid-cols-12 gap-2 text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2 px-2">
           <div className="col-span-1 text-center">Set</div>
-          <div className="col-span-1 text-center">Reps</div>
-          <div className="col-span-1 text-center">Weight ({unit})</div>
-          <div className="col-span-1 text-center">Volume</div>
+          <div className="col-span-5 text-center">Reps</div>
+          <div className="col-span-5 text-center">Weight ({unit})</div>
           <div className="col-span-1 text-center">Actions</div>
         </div>
         <div className="space-y-2">
@@ -68,21 +66,25 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, unit, onUpdateSet
         </div>
         <button
           onClick={() => onAddSet(exercise.id)}
-          className="mt-4 w-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-colors"
+          className="mt-4 w-full bg-neutral-200/60 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-300 font-semibold py-2 px-4 rounded-lg hover:bg-neutral-300/60 dark:hover:bg-neutral-700/60 transition-colors"
         >
           <Icon name="plus" className="mr-2" />
           Add Set
         </button>
+        <div className="mt-4 text-center">
+            <span className="text-neutral-600 dark:text-neutral-400">Total Volume: </span>
+            <span className="font-bold text-lg text-neutral-800 dark:text-neutral-200">{exerciseVolume.toLocaleString()} {unit}</span>
+        </div>
       </div>
       
       <Modal isOpen={isTipModalOpen} onClose={() => setIsTipModalOpen(false)} title={`Tip for ${exercise.name}`}>
         {isLoadingTip ? (
           <div className="flex items-center justify-center p-8">
-            <Icon name="spinner" className="text-3xl text-teal-500" />
+            <Icon name="spinner" className="text-3xl text-neutral-500" />
             <p className="ml-4">Getting tip from Gemini...</p>
           </div>
         ) : (
-          <p className="text-bunker-700 dark:text-bunker-300 whitespace-pre-wrap">{tip}</p>
+          <p className="text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">{tip}</p>
         )}
       </Modal>
     </div>

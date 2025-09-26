@@ -11,11 +11,11 @@ interface BarChartProps {
   barColor?: string;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data, barColor = 'bg-blue-500' }) => {
+const BarChart: React.FC<BarChartProps> = ({ data, barColor = 'bg-neutral-500' }) => {
   const maxValue = Math.max(...data.map(d => d.value), 0);
 
   return (
-    <div className="w-full h-64 flex items-end justify-around space-x-2 p-4 bg-bunker-200/50 dark:bg-bunker-800/50 rounded-lg">
+    <div className="w-full h-64 flex items-end justify-around space-x-2 p-4 bg-neutral-200/50 dark:bg-neutral-800/50 rounded-lg">
       {data.map((item, index) => (
         <div key={index} className="flex-1 flex flex-col items-center h-full">
           <div className="w-full h-full flex items-end">
@@ -25,7 +25,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, barColor = 'bg-blue-500' }) =
                 title={`Volume: ${item.value.toLocaleString()}`}
               ></div>
           </div>
-          <span className="text-xs font-semibold mt-2 text-bunker-600 dark:text-bunker-400">{item.label}</span>
+          <span className="text-xs font-semibold mt-2 text-neutral-600 dark:text-neutral-400">{item.label}</span>
         </div>
       ))}
     </div>

@@ -8,14 +8,16 @@ import DailyChecklist from './components/DailyChecklist';
 import Settings from './components/Settings';
 import WorkoutSelectionModal from './components/WorkoutSelectionModal';
 import { seedInitialData } from './services/dataService';
-import type { DailyChecklist as DailyChecklistType, WorkoutTemplate, WeightUnit } from './types';
+import { EXERCISES, WORKOUT_TEMPLATES } from './constants';
+import type { DailyChecklist as DailyChecklistType, WorkoutTemplate, WeightUnit, Session, SessionExercise, SetEntry } from './types';
 import Icon from './components/common/Icon';
 
 type View = 'calendar' | 'dashboard' | 'daily' | 'history' | 'settings' | 'session';
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>('calendar');
-  const [activeWorkout, setActiveWorkout] = useState<WorkoutTemplate | null>(null);
+  const [sessions, setSessions] = useLocalStorage<Session[]>('sessions', []);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('theme', 'dark');
   const [unit, setUnit] = useLocalStorage<WeightUnit>('unit', 'kg');
   const [checklistData, setChecklistData] = useLocalStorage<DailyChecklistType>('dailyChecklist', {
@@ -27,6 +29,7 @@ const App: React.FC = () => {
     waterLogged: false,
   });
   const [isWorkoutSelectionOpen, setWorkoutSelectionOpen] = useState(false);
+  const [workoutSelectionDate, setWorkoutSelectionDate] = useState<string | null>(null);
   const [suggestedTemplate, setSuggestedTemplate] = useState<WorkoutTemplate | undefined>(undefined);
 
   useEffect(() => {
@@ -61,19 +64,48 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [resetChecklistIfNeeded]);
 
-  const handleStartWorkoutRequest = (template: WorkoutTemplate) => {
-    setSuggestedTemplate(template);
+  const handleStartWorkoutRequest = (date: string) => {
+    const dayName = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
+    setSuggestedTemplate(WORKOUT_TEMPLATES.find(t => t.dayOfWeek === dayName));
+    setWorkoutSelectionDate(date);
     setWorkoutSelectionOpen(true);
   };
-
-  const handleWorkoutSelected = (template: WorkoutTemplate) => {
-    setWorkoutSelectionOpen(false);
-    setActiveWorkout(template);
+  
+  const handleEditSession = (sessionId: string) => {
+    setActiveSessionId(sessionId);
     setView('session');
   };
 
-  const completeWorkout = () => {
-    setActiveWorkout(null);
+  const handleWorkoutSelected = (template: WorkoutTemplate) => {
+    if (!workoutSelectionDate) return;
+
+    const initialExercises = template.exercises.map(templateExercise => {
+      const exerciseDetails = EXERCISES.find(e => e.id === templateExercise.exerciseId);
+      if (!exerciseDetails) return null;
+      const sets: SetEntry[] = Array.from({ length: templateExercise.defaultSets }, (_, i) => ({
+        id: `set-${Date.now()}-${i}`, reps: 0, weight: 0, volume: 0,
+      }));
+      return { ...exerciseDetails, sets };
+    }).filter((ex): ex is SessionExercise => ex !== null);
+    
+    const newSession: Session = {
+      id: `session-${Date.now()}`,
+      date: workoutSelectionDate,
+      templateId: template.id,
+      exercises: initialExercises,
+      totalVolume: 0,
+      unit: unit,
+      status: 'in-progress'
+    };
+    
+    setSessions(prev => [...prev, newSession]);
+    setActiveSessionId(newSession.id);
+    setWorkoutSelectionOpen(false);
+    setView('session');
+  };
+
+  const exitSession = () => {
+    setActiveSessionId(null);
     setView('calendar');
   };
   
@@ -88,7 +120,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (view) {
       case 'session':
-        return activeWorkout && <WorkoutSession template={activeWorkout} onComplete={completeWorkout} unit={unit} />;
+        return activeSessionId && <WorkoutSession sessionId={activeSessionId} onExit={exitSession} unit={unit} />;
       case 'history':
         return <History unit={unit} />;
       case 'dashboard':
@@ -99,15 +131,15 @@ const App: React.FC = () => {
         return <DailyChecklist data={checklistData} setData={setChecklistData} />;
       case 'calendar':
       default:
-        return <CalendarView onStartWorkout={handleStartWorkoutRequest} />;
+        return <CalendarView onStartWorkoutRequest={handleStartWorkoutRequest} onEditSession={handleEditSession}/>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-bunker-50 dark:bg-bunker-950 text-bunker-800 dark:text-bunker-200 font-sans transition-colors duration-300">
-      <div className="container mx-auto px-4 pb-32">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-800 dark:text-neutral-200 font-sans transition-colors duration-300">
+      <div className="container mx-auto px-4 pb-28">
         <header className="py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-400">
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
             <Icon name="dumbbell" className="mr-2" /> PPL Tracker
           </h1>
           <nav className="flex items-center space-x-2 sm:space-x-4">
@@ -115,7 +147,7 @@ const App: React.FC = () => {
                 <button 
                   key={item.view}
                   onClick={() => setView(item.view)} 
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${view === item.view ? 'bg-bunker-200 dark:bg-bunker-800 text-blue-500' : 'hover:bg-bunker-200 dark:hover:bg-bunker-800'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${view === item.view ? 'bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100' : 'hover:bg-neutral-200 dark:hover:bg-neutral-800'}`}
                   aria-label={item.label}
                 >
                   <Icon name={item.icon} />

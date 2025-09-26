@@ -11,7 +11,7 @@ interface SetRowProps {
 }
 
 const SetRow: React.FC<SetRowProps> = ({ set, setNumber, unit, onUpdate, onRemove }) => {
-  const kgSuggestions = [5, 7.5, 10, 12.5, 15, 20];
+  const kgSuggestions = [5, 7.5, 10, 12.5, 15, 17.5, 20];
   const lbsSuggestions = [10, 15, 20, 25, 30, 45];
   const suggestions = unit === 'kg' ? kgSuggestions : lbsSuggestions;
 
@@ -24,57 +24,101 @@ const SetRow: React.FC<SetRowProps> = ({ set, setNumber, unit, onUpdate, onRemov
     }
   };
 
-  const toggleCompleted = () => {
-    onUpdate({ isCompleted: !set.isCompleted });
+  const handleWeightFocus = () => {
+    if (set.reps === 0) {
+      onUpdate({ reps: 12 });
+    }
+  };
+  
+  const handleWeightInteraction = (newWeight: number) => {
+    const updates: Partial<SetEntry> = { weight: newWeight };
+    if (set.reps === 0) {
+      updates.reps = 12;
+    }
+    onUpdate(updates);
+  };
+  
+  const handleWeightAdjust = (amount: number) => {
+    const currentWeight = set.weight || 0;
+    const newWeight = Math.max(0, currentWeight + amount);
+    handleWeightInteraction(newWeight);
+  };
+
+  const handleRepAdjust = (amount: number) => {
+    const currentReps = set.reps || 0;
+    const newReps = Math.max(0, currentReps + amount);
+    onUpdate({ reps: newReps });
   };
 
   return (
-    <div className={`p-2 rounded-lg transition-colors ${set.isCompleted ? 'bg-green-100 dark:bg-green-900/30' : 'bg-bunker-200 dark:bg-bunker-800/50'}`}>
-      <div className="grid grid-cols-5 gap-2 items-center">
-        <div className="col-span-1 text-center font-bold text-bunker-700 dark:text-bunker-300">{setNumber}</div>
-        <div className="col-span-1">
+    <div className="p-2 rounded-lg bg-neutral-200/50 dark:bg-neutral-800/30">
+      <div className="grid grid-cols-12 gap-2 items-center">
+        <div className="col-span-1 text-center font-bold text-xl text-neutral-700 dark:text-neutral-300">{setNumber}</div>
+        <div className="col-span-5 flex items-center justify-center gap-1.5">
+          <button
+            onClick={() => handleRepAdjust(-1)}
+            className="w-8 h-10 rounded-md bg-neutral-300 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-400 dark:hover:bg-neutral-600 transition-colors font-bold text-lg flex items-center justify-center flex-shrink-0"
+            aria-label="Decrease reps by 1"
+          >
+            -
+          </button>
           <input
             type="number"
             value={set.reps === 0 ? '' : set.reps}
             onChange={(e) => handleInputChange('reps', e.target.value)}
-            className="w-full bg-bunker-50 dark:bg-bunker-700 text-center rounded-md p-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full min-w-0 flex-grow bg-neutral-50 dark:bg-neutral-700 text-center rounded-md py-3 px-1 text-xl font-semibold border-transparent focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
             placeholder="0"
           />
+           <button
+            onClick={() => handleRepAdjust(1)}
+            className="w-8 h-10 rounded-md bg-neutral-300 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-400 dark:hover:bg-neutral-600 transition-colors font-bold text-lg flex items-center justify-center flex-shrink-0"
+            aria-label="Increase reps by 1"
+          >
+            +
+          </button>
         </div>
-        <div className="col-span-1">
+        <div className="col-span-5 flex items-center justify-center gap-1.5">
+           <button
+            onClick={() => handleWeightAdjust(-2.5)}
+            className="w-8 h-10 rounded-md bg-neutral-300 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-400 dark:hover:bg-neutral-600 transition-colors font-bold text-lg flex items-center justify-center flex-shrink-0"
+            aria-label="Decrease weight by 2.5"
+          >
+            -
+          </button>
           <input
             type="number"
-            step="2.5"
+            step="0.5"
             value={set.weight === 0 ? '' : set.weight}
             onChange={(e) => handleInputChange('weight', e.target.value)}
-            className="w-full bg-bunker-50 dark:bg-bunker-700 text-center rounded-md p-2 border-transparent focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onFocus={handleWeightFocus}
+            className="w-full min-w-0 flex-grow bg-neutral-50 dark:bg-neutral-700 text-center rounded-md py-3 px-1 text-xl font-semibold border-transparent focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
             placeholder="0"
           />
-        </div>
-        <div className="col-span-1 text-center font-mono text-bunker-700 dark:text-bunker-300">{set.volume.toLocaleString()}</div>
-        <div className="col-span-1 flex justify-center items-center gap-2">
-          <button onClick={toggleCompleted} className={`transition-colors ${set.isCompleted ? 'text-green-500' : 'text-bunker-400 hover:text-green-500'}`}>
-            <Icon name="check" />
+           <button
+            onClick={() => handleWeightAdjust(2.5)}
+            className="w-8 h-10 rounded-md bg-neutral-300 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-400 dark:hover:bg-neutral-600 transition-colors font-bold text-lg flex items-center justify-center flex-shrink-0"
+            aria-label="Increase weight by 2.5"
+          >
+            +
           </button>
-          <button onClick={onRemove} className="text-bunker-400 hover:text-red-500 transition-colors">
+        </div>
+        <div className="col-span-1 flex justify-center items-center">
+          <button onClick={onRemove} className="text-neutral-400 hover:text-red-500 dark:hover:text-red-500 transition-colors text-2xl">
             <Icon name="trash" />
           </button>
         </div>
       </div>
-      {!set.isCompleted && set.weight === 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5 justify-center items-center px-1">
-          <span className="text-xs self-center mr-1 text-bunker-500">Quick Add:</span>
-          {suggestions.map(w => (
-            <button
-              key={w}
-              onClick={() => onUpdate({ weight: w })}
-              className="text-xs px-2.5 py-1 rounded-full bg-bunker-300 dark:bg-bunker-700 text-bunker-700 dark:text-bunker-200 hover:bg-blue-500 hover:text-white transition-colors"
-            >
-              {w}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap gap-1.5 justify-center items-center px-1">
+        {suggestions.map(w => (
+          <button
+            key={w}
+            onClick={() => handleWeightInteraction(w)}
+            className="text-sm px-3 py-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-900 hover:text-white dark:hover:bg-neutral-200 dark:hover:text-black transition-colors"
+          >
+            {w}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
