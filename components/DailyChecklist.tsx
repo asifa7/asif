@@ -1,14 +1,50 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import type { DailyChecklist as DailyChecklistType } from '../types';
 import Icon from './common/Icon';
 
 interface DailyChecklistProps {
-  data: DailyChecklistType;
-  setData: (data: DailyChecklistType) => void;
+  allChecklists: { [date: string]: DailyChecklistType };
+  setAllChecklists: (data: React.SetStateAction<{ [date: string]: DailyChecklistType }>) => void;
 }
 
-const DailyChecklist: React.FC<DailyChecklistProps> = ({ data, setData }) => {
+const DailyChecklist: React.FC<DailyChecklistProps> = ({ allChecklists, setAllChecklists }) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const changeDate = (amount: number) => {
+    setSelectedDate(prev => {
+      const newDate = new Date(prev);
+      newDate.setDate(newDate.getDate() + amount);
+      return newDate;
+    });
+  };
+
+  const setToToday = () => {
+    setSelectedDate(new Date());
+  };
+
+  const dateString = selectedDate.toISOString().split('T')[0];
+  const isToday = new Date().toISOString().split('T')[0] === dateString;
+
+  const defaultData: DailyChecklistType = {
+    date: dateString,
+    waterMl: 0,
+    creatineTaken: false,
+    fishOilTaken: false,
+    multivitaminTaken: false,
+    waterLogged: false,
+  };
+
+  const data = allChecklists[dateString] || defaultData;
+
+  const updateCurrentData = (updates: Partial<DailyChecklistType>) => {
+    const currentData = allChecklists[dateString] || defaultData;
+    const newData = { ...currentData, ...updates };
+    setAllChecklists(prev => ({
+      ...prev,
+      [dateString]: newData,
+    }));
+  };
+
   const totalWaterGlasses = 8;
   const waterPerGlass = 500;
   const currentGlasses = data.waterMl / waterPerGlass;
@@ -16,19 +52,14 @@ const DailyChecklist: React.FC<DailyChecklistProps> = ({ data, setData }) => {
   const handleWaterClick = (index: number) => {
     const clickedGlasses = index + 1;
     const newWaterMl = data.waterMl === clickedGlasses * waterPerGlass ? (clickedGlasses - 1) * waterPerGlass : clickedGlasses * waterPerGlass;
-    setData({ ...data, waterMl: newWaterMl });
+    updateCurrentData({ waterMl: newWaterMl });
   };
 
-  const handleLogWater = () => {
-    setData({ ...data, waterLogged: true });
-  };
-
-  const handleEditWater = () => {
-    setData({ ...data, waterLogged: false });
-  };
+  const handleLogWater = () => updateCurrentData({ waterLogged: true });
+  const handleEditWater = () => updateCurrentData({ waterLogged: false });
   
   const toggleSupplement = (supplement: 'creatineTaken' | 'fishOilTaken' | 'multivitaminTaken') => {
-    setData({ ...data, [supplement]: !data[supplement] });
+    updateCurrentData({ [supplement]: !data[supplement] });
   };
 
   const supplements = [
@@ -39,7 +70,26 @@ const DailyChecklist: React.FC<DailyChecklistProps> = ({ data, setData }) => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">Daily Checklist</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Daily Checklist</h2>
+        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-900 p-1.5 rounded-lg">
+          <button onClick={() => changeDate(-1)} className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800" aria-label="Previous day">
+            <Icon name="chevronLeft" />
+          </button>
+          <div className="text-center">
+            <p className="font-semibold">{selectedDate.toLocaleDateString('default', { weekday: 'long' })}</p>
+            <p className="text-sm text-neutral-500">{selectedDate.toLocaleDateString('default', { month: 'short', day: 'numeric' })}</p>
+          </div>
+          <button onClick={() => changeDate(1)} className="px-3 py-2 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800" aria-label="Next day">
+            <Icon name="chevronRight" />
+          </button>
+          {!isToday && (
+             <button onClick={setToToday} className="px-3 py-2 text-sm font-semibold rounded-md bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                Today
+            </button>
+          )}
+        </div>
+      </div>
       <div className="space-y-6">
         {/* Water Intake Card */}
         <div className="bg-neutral-100 dark:bg-neutral-900 p-6 rounded-lg">
@@ -67,7 +117,7 @@ const DailyChecklist: React.FC<DailyChecklistProps> = ({ data, setData }) => {
                   <button
                     key={index}
                     onClick={() => handleWaterClick(index)}
-                    className={`flex-1 h-4 rounded-full transition-all duration-300 ${index < currentGlasses ? 'bg-neutral-600' : 'bg-neutral-300 dark:bg-neutral-700'}`}
+                    className={`flex-1 h-4 rounded-full transition-all duration-300 ${index < currentGlasses ? 'bg-neutral-900 dark:bg-neutral-100' : 'bg-neutral-300 dark:bg-neutral-700'}`}
                     aria-label={`Set water intake to ${(index + 1) * waterPerGlass}ml`}
                   ></button>
                 ))}

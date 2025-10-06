@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import CalendarView from './components/CalendarView';
 import WorkoutSession from './components/WorkoutSession';
@@ -20,14 +20,8 @@ const App: React.FC = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('theme', 'dark');
   const [unit, setUnit] = useLocalStorage<WeightUnit>('unit', 'kg');
-  const [checklistData, setChecklistData] = useLocalStorage<DailyChecklistType>('dailyChecklist', {
-    date: new Date().toISOString().split('T')[0],
-    waterMl: 0,
-    creatineTaken: false,
-    fishOilTaken: false,
-    multivitaminTaken: false,
-    waterLogged: false,
-  });
+  const [checklists, setChecklists] = useLocalStorage<{ [date: string]: DailyChecklistType }>('dailyChecklists', {});
+
   const [isWorkoutSelectionOpen, setWorkoutSelectionOpen] = useState(false);
   const [workoutSelectionDate, setWorkoutSelectionDate] = useState<string | null>(null);
   const [suggestedTemplate, setSuggestedTemplate] = useState<WorkoutTemplate | undefined>(undefined);
@@ -43,26 +37,6 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
-
-  const resetChecklistIfNeeded = useCallback(() => {
-    const today = new Date().toISOString().split('T')[0];
-    if (checklistData.date !== today) {
-      setChecklistData({
-        date: today,
-        waterMl: 0,
-        creatineTaken: false,
-        fishOilTaken: false,
-        multivitaminTaken: false,
-        waterLogged: false,
-      });
-    }
-  }, [checklistData.date, setChecklistData]);
-
-  useEffect(() => {
-    resetChecklistIfNeeded();
-    const interval = setInterval(resetChecklistIfNeeded, 60000); // Check every minute
-    return () => clearInterval(interval);
-  }, [resetChecklistIfNeeded]);
 
   const handleStartWorkoutRequest = (date: string) => {
     const dayName = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
@@ -128,7 +102,7 @@ const App: React.FC = () => {
       case 'settings':
         return <Settings theme={theme} setTheme={setTheme} unit={unit} setUnit={setUnit} />;
       case 'daily':
-        return <DailyChecklist data={checklistData} setData={setChecklistData} />;
+        return <DailyChecklist allChecklists={checklists} setAllChecklists={setChecklists} />;
       case 'calendar':
       default:
         return <CalendarView onStartWorkoutRequest={handleStartWorkoutRequest} onEditSession={handleEditSession}/>;
